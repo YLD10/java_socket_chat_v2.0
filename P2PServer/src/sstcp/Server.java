@@ -33,13 +33,13 @@ public class Server {
     }
 
     /**
-     *  主要执行函数
+     * 主要执行函数
      */
     public void Run() {
         ServerSocket serverSocket = null;
         try {
             // 初始化服务端socket连接，监听端口32768
-            serverSocket = new ServerSocket(32768);
+            serverSocket = new ServerSocket(32768, 2048);
             System.out.println("服务端启动成功！");
 
             // 创建用于群发消息的辅助线程
@@ -67,7 +67,7 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("关闭服务器失败！");
-            }finally {
+            } finally {
                 threadPool.shutdown();
             }
         }
@@ -75,6 +75,7 @@ public class Server {
 
     /**
      * 内部线程类, 负责群发消息
+     * 
      * @author YLD10
      * 
      */
@@ -85,7 +86,7 @@ public class Server {
                 if (messages.size() > 0) {
                     String msg = messages.remove();
                     String sendName = "";
-                    
+
                     if (msg.startsWith("@#data#@")) {
                         sendName = msg.substring(8, msg.indexOf("<>?:\"|{}")); // 收信人昵称,8起始是为跳过消息首部
                     }
@@ -98,7 +99,7 @@ public class Server {
                         }
                         serverThread.sendMsg(msg);
                     }
-                }else {
+                } else {
                     // 如果当前没有消息, 就先睡眠一阵
                     try {
                         Thread.sleep(100);
